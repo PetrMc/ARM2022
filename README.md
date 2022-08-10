@@ -11,4 +11,3 @@ The demo has two AWS clusters setup:
 
 - [ARM Blog](https://community.arm.com/arm-community-blogs/b/infrastructure-solutions-blog/posts/deploying-tetrate-istio-distribution-for-arm-neoverse-based-aws-graviton-processors) on similar setup
 - [Bookinfo application](https://istio.io/latest/docs/examples/bookinfo/) that is used for the demo
-
