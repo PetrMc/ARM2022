@@ -17,7 +17,7 @@ function updateRoute53() {
   if [ -n "$3" ]; then
     RECORD_TYPE=$3
   fi
-  echo $FQDN, $RECORD_VALUE
+  echo "$FQDN", "$RECORD_VALUE"
 
   eval "echo \"$(cat route53_record.tmpl)\"" >/tmp/"${FQDN}"-dns.json
   aws route53 change-resource-record-sets --hosted-zone-id "$HOSTEDZONEID" --change-batch file:///tmp/"${FQDN}"-dns.json
@@ -60,20 +60,20 @@ function createAWSCluster() {
    SITE_LABEL=$6
    required_dashes=2
    owner_tag="${OWNER_NAME}@tetrate.io"
-   number_dashes=$(echo ${REGION} | grep -o '-' | wc -l)
-   if [ $number_dashes -ne $required_dashes ]; then
+   number_dashes=$(echo "${REGION}" | grep -o '-' | wc -l)
+   if [ "$number_dashes" -ne $required_dashes ]; then
      echo "Region name needs correction in variables file - number of \"-\" doesn't match the AWS cloud specs" >&2
      exit 1
    fi
-   eksctl create cluster --region $REGION \
-           --name $CLUSTER  \
-           --nodes $NUMBER_NODES \
-           --node-type $NODE_TYPE \
+   eksctl create cluster --region "$REGION" \
+           --name "$CLUSTER"  \
+           --nodes "$NUMBER_NODES" \
+           --node-type "$NODE_TYPE" \
            --node-labels="Owner=cxteam,Environment=${DEPLOYMENT_TYPE},Contact=${OWNER_NAME},type=${TYPE_LABEL},site=${SITE_LABEL},demo_env=${DEPLOYMENT_NAME}" \
            --tags "Tetrate:Owner=${owner_tag}" \
            --version=1.22 >&2
 
-   eksctl create iamidentitymapping --cluster $CLUSTER \
+   eksctl create iamidentitymapping --cluster "$CLUSTER" \
 	   --arn arn:aws:iam::192760260411:role/OpsAdmin \
-	   --group system:masters --username OpsAdmin --region $REGION
+	   --group system:masters --username OpsAdmin --region "$REGION"
 }

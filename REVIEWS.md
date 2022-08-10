@@ -1,11 +1,12 @@
-# REVIEWS CLUSTER 
+# REVIEWS CLUSTER
 
-the Reviews microservices of the [Bookinfo application](https://istio.io/latest/docs/examples/bookinfo/) are deployed in EC2 cluster. The services will work in conjuction of other services that are deployed in AWS Graviton cluster. 
+the Reviews microservices of the [Bookinfo application](https://istio.io/latest/docs/examples/bookinfo/) are deployed in EC2 cluster. The services will work in conjunction of other services that are deployed in AWS Graviton cluster.
 
 ## Deploy AWS Cluster
 
 Requires Tetrate CX Demo script
-```
+
+```bash
 source functions.sh 
 export OWNER_NAME=petr
 export DEPLOYMENT_TYPE=reviews
@@ -16,9 +17,10 @@ createAWSCluster $CLUSTER_NAME $REGION "m5.xlarge" 2 $DEPLOYMENT_TYPE DEPLOYMENT
 ```
 
 ### Deploy Tetrate version of Istio
+
 After the cluster is created
 
-```
+```bash
 eksctl utils associate-iam-oidc-provider --cluster $CLUSTER_NAME --approve --region $REGION
 
 aws ecr get-login-password \
@@ -61,7 +63,7 @@ rm -rf /tmp/awsmp-chart
 
 ## Install gateway in the cluster
 
-```
+```bash
 kubectl create namespace istio-ingress
 kubectl label namespace istio-ingress istio-injection=enabled
 helm repo add istio https://istio-release.storage.googleapis.com/charts
@@ -71,7 +73,7 @@ helm install istio-ingress istio/gateway -n istio-ingress --wait
 
 ## Install customized version of Reviews
 
-```
+```bash
 kubectl create ns bookinfo 
 kubectl label namespace bookinfo istio-injection=enabled
 kubectl apply -f reviews-all.yaml
@@ -79,13 +81,14 @@ kubectl apply -f reviews-all.yaml
 
 ## Get address from the service and update CNAME for AWS (or A) record accordingly
 
-```
+```bash
 REVIEWS_ADDR=$(kubectl -n istio-ingress  get service istio-ingress -o=jsonpath="{.status.loadBalancer.ingress[0]['hostname','ip']}")
 echo $REVIEWS_ADDR
 ```
 
 in this case `reviews-arm-demo.cx.tetrate.info` will be set to point to the value of $REVIEWS_ADDR
-```
+
+```bash
 source functions.sh 
 export HOSTEDZONEID=<enter yours> # such as Z23ABC4XYZL05B
 updateRoute53 reviews-arm-demo.cx.tetrate.info $REVIEWS_ADDR CNAME
