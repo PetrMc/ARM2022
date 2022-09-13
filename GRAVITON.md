@@ -10,7 +10,7 @@ tmproot=$PWD
 export OWNER_NAME=petr
 export DEPLOYMENT_TYPE=graviton
 export DEPLOYMENT_NAME=arm-demo
-export CLUSTER_NAME=arm-demo-graviton
+export CLUSTER_NAME=demo-graviton
 export REGION=ca-central-1
 createAWSCluster $CLUSTER_NAME $REGION "m6g.large" 2 $DEPLOYMENT_TYPE DEPLOYMENT_NAME
 ```
@@ -44,7 +44,7 @@ helm install \
   --set auth.strategy="anonymous" \
   --repo https://kiali.org/helm-charts \
   kiali-server \
-  kiali-server
+  --generate-name
 ```
 
 ## Deploy bookinfo application (all without Reviews)
@@ -67,8 +67,12 @@ in this case `ratings-arm-demo.cx.tetrate.info` and `bookinfo-arm-demo.cx.tetrat
 source functions.sh 
 export HOSTEDZONEID=<enter yours> # such as Z23ABC4XYZL05B
 updateRoute53 bookinfo-arm-demo.cx.tetrate.info $BOOKINFO_ADDR CNAME
-updateRoute53 ratings-arm-demo.cx.tetrate.info $BOOKINFO_ADDR CNAME
 ```
+
+## Access Bookinfo Application
+
+- Bookinfo ProductPage pointing your browser to [url from previous step](http://bookinfo-arm-demo.cx.tetrate.info/productpage)
+- Refresh the page few times to see update of Book review microservice and to see it shifts between versions
 
 ## Finally deploy Traffic Generator
 
@@ -84,8 +88,3 @@ kubectl port-forward svc/kiali 20001:20001 -n istio-system
 
 point your browser to [localhost:20001](http://localhost:20001)
 
-## Access Bookinfo Application
-
-```bash
-http://bookinfo-arm-demo.cx.tetrate.info/productpage
-```
